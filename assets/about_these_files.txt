@@ -1,0 +1,39 @@
+1. api_configs.json
+
+This file defines the data feeds that will be aggregated. In this implementation, a feed is simply an XML file in the form of a URL. Each feed has a name, which will be referenced in any status emails that are sent.
+
+The url field is the URL of the XML file to be aggregated.
+
+The xml_output_directory is where the file will be stored on the aggregation server for processing. Do NOT change this entry, unless you are an advanced AWS user and can also change the EFS mount point within the Cloud Formation template.
+
+The xml_output_filename is the name of the file where the feed data will be stored. It must be unique within all the xml_output_filenames in api_configs.json.
+
+The error_email_from_address is the "From" address that will be used when sending error emails. 
+
+The error_email_list is a comma-delimited list of email addresses, configured per endpoint, that that will receive error emails.
+
+2. AggregationServer.jar 
+
+This is the latest compiled version of the project at https://github.com/indeedalliances/FeedAggregator. It is the service that downloads the data from the endpoints configured in api_configs.json. If you compile your own version, it must be named AggregationServer.jar in order for the Cloud Formation template to work.
+
+3. HealthChecks.jar
+
+This is the latest compiled version of the project at https://github.com/indeedalliances/AWSHealthChecks. It contains the health checks that are executed again both the Aggregation Server as well as the FTP server. If you compile your own version, it must be named HealthChecks.jar in order for the Cloud Formation template to work.
+
+4. JobInitiator.jar
+
+This is the latest compiled version of the project at https://github.com/indeedalliances/JobInitiator. It contains the code that is triggered by the cron daemon to initiate an aggregation job. It's sole purpose is to initate the /GetJobs method, without waiting for a response (which might be lengthy, depending on the number of endpoints). If you compile your own version, it must be named JobInitiator.jar in order for the Cloud Formation template to work.
+
+5. prettyprint.py
+
+This is the latest version of the project at https://github.com/indeedalliances/prettyprintXML. It contains the code that ensures the format of the final XML file is correct.
+
+6. python_requirements.txt 
+
+This is the list of modules required by prettyprint. It is installed on the aggregation server during initialization.
+
+7. vstpd.conf
+
+This is the configuration file for vsftpd daemon on the FTP server. It is installed on the FTP server during initialization.
+
+
