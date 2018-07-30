@@ -1,6 +1,6 @@
 This demo is for use by Indeed's ATS partners to illustrate how to aggregate multiple data feeds in to a single XML file. While it is only a demo, it contains the vast majority of code and infrastructure that would be required to deploy a production system, regardless of size.
 
-The architecture is designed to be deployed with Amazon Web Services. It uses two singleton autoscaling groups (i.e. they have both a minimum and maximum size of one server). One ASG manages the Feed Aggregator, and the other manages the FTP server that serves the aggregated file. For a detailed network diagram, refer to FeedAggregationReferenceArchitecture.pdf
+The architecture is designed to be deployed with Amazon Web Services. It uses two singleton autoscaling groups (i.e. they have both a minimum and maximum size of one server). One ASG manages the Feed Aggregator, and the other manages the FTP server that serves the aggregated file. For a detailed network diagram, refer to FeedAggregationReferenceArchitecture.pdf. For a detailed description of the workflow, refer to FeedAggregatorReferenceArchitectureDetailedDescription.pdf
 
 In this demo, data feeds are represented by the three XML files stored in the "testdata" directory. The data feed endpoints are defined in the file "api_configs.json". If your ATS requires authentication or is a RESTful API, it will be your responsibility to modify the aggregation code as well as the configuration file format to accomodate your system. This should be the ONLY modification required to turn this demo in to a production system.
 
