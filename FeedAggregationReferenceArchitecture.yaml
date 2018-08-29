@@ -75,10 +75,22 @@ Parameters:
     Description: The Subnet Ids for ALL Availability Zones within the VPC. If in doubt, select all of them.
   FTPUserName:
     Type: String
-    Description: The username to be created for the ftp account
+    Description: The username to be created for the ftp account.
   FTPPassword:
     Type: String
-    Description: The password for the ftp account
+    Description: The password for the ftp account.
+  AggregatorWorkerCount:
+    Type: Number
+    Description: The number of download worker threads.
+    Default: 4
+    MinValue: 1
+    MaxValue: 64
+  PreserveFtpFileCount:
+    Type: Number
+    Description: The number of previous XML files to preserve on FTP server
+    Default: 24
+    MinValue: 0
+    MaxValue: 10000
 
 Conditions:
   hasThreeAZs: !Or [
@@ -301,6 +313,7 @@ Resources:
       SubnetId: !Select [ 5, !Ref Subnets ]
   AggLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
+    DependsOn: [ DataStore, EFSMountTarget0, EFSMountTarget1, AggEIP ]
     Properties:
       EbsOptimized: false
       IamInstanceProfile: !Ref Ec2Profile
@@ -358,7 +371,13 @@ Resources:
               - "sudo chown ec2-user /home/ec2-user/JobInitiator.jar\n"
               - "sudo chgrp ec2-user /home/ec2-user/JobInitiator.jar\n"
               - "# preserve file count\n"
-              - "sudo echo export preserve_file_count='40' >> /etc/profile\n"
+              - "sudo echo export preserve_file_count='"
+              - !Sub ${PreserveFtpFileCount}
+              - "' >> /etc/profile\n"
+              - "# add env var for threadpool size for download workers\n"
+              - "sudo echo export threadpool_count='"
+              - !Sub ${AggregatorWorkerCount}
+              - "' >> /etc/profile\n"
               - "# get elastic ip address\n"
               - "INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)\n"
               - "aws configure set region "
@@ -406,6 +425,7 @@ Resources:
       MaxSize: 1
   FTPLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
+    DependsOn: [ DataStore, EFSMountTarget0, EFSMountTarget1, FTPEIP ]
     Properties:
       EbsOptimized: false
       IamInstanceProfile: !Ref Ec2Profile
@@ -518,7 +538,9 @@ Metadata:
         Parameters:
           - S3CodeBucket
           - AggregatorInstanceType
+          - AggregatorWorkerCount
           - FTPInstanceType
+          - PreserveFtpFileCount
           - SSHKeyName
       -
         Label:
@@ -531,9 +553,11 @@ Metadata:
       S3CodeBucket: 
         default: S3 Resource Bucket
       AggregatorInstanceType:
-        default: Aggregator instance type
+        default: Aggregator Instance Type
+      AggregatorWorkerCount:
+        default: Aggregation Workers
       FTPInstanceType:
-        default: FTP instance type
+        default: FTP Instance Type
       SSHKeyName:
         default: KeyPair for SSH access
       SSHIngressCIDR:
@@ -546,6 +570,8 @@ Metadata:
         default: Name of FTP user to be created
       FTPPassword:
         default: Password of FTP user to be created
+      PreserveFtpFileCount:
+        default: Previous XML files to preserve
 
 Outputs:
   ftpaddress:
