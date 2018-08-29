@@ -29,7 +29,9 @@ EC2 Configuration questions:
 
 	- The name of the S3 Resources Bucket to which you uploaded the files in your "assets" directory.
 	- The EC2 instance type for the Aggregation server. For the demo, nano will work.
+	- The number of Aggregation Worker threads to be used to download data from the endpoints.
 	- The EC2 instance type for the FTP server. For the demo, nano will work.
+	- The number of previous XML outptut files to preserve. Note that the scratch files used to asemble the current XML output file will alwasy be preserved.
 	- The name of the SSH KeyPair to be used to access the EC2 instances.
 
 FTP Configuration questions:
