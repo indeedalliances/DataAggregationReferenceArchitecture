@@ -93,6 +93,9 @@ Parameters:
     MaxValue: 10000
 
 Conditions:
+  hasSixAZs: !Equals [!Ref "AWS::Region", "us-east-1"]
+  hasFourAZs: !Or [
+      !Equals [!Ref "AWS::Region", "ap-northeast-1"],!Condition hasSixAZs]
   hasThreeAZs: !Or [
       !Equals [!Ref "AWS::Region", "us-east-2"],
       !Equals [!Ref "AWS::Region", "us-west-1"],
@@ -102,9 +105,8 @@ Conditions:
       !Equals [!Ref "AWS::Region", "eu-central-1"],
       !Equals [!Ref "AWS::Region", "eu-west-1"],
       !Equals [!Ref "AWS::Region", "eu-west-2"],
-      !Equals [!Ref "AWS::Region", "eu-west-3"]]
-  hasFourAZs: !Equals [!Ref "AWS::Region", "ap-northeast-1"]
-  hasSixAZs: !Equals [!Ref "AWS::Region", "us-east-1"]
+      !Equals [!Ref "AWS::Region", "eu-west-3"],
+      !Condition hasFourAZs]
 
 Mappings:
   AWSRegion2AMI:
