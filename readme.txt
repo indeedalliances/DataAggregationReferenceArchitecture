@@ -1,21 +1,21 @@
 This demo is for use by Indeed's ATS partners to illustrate how to aggregate multiple data feeds in to a single XML file. While it is only a demo, it contains the vast majority of code and infrastructure that would be required to deploy a production system, regardless of the number of data feeds.
 
-The architecture is designed to be deployed with Amazon Web Services. It uses two singleton autoscaling groups (i.e. they have both a minimum and maximum size of one server). One ASG manages the Feed Aggregator, and the other manages the FTP server that serves the aggregated file. For a detailed network diagram, refer to FeedAggregationReferenceArchitecture.pdf. For a detailed description of the workflow, refer to FeedAggregatorReferenceArchitectureDetailedDescription.pdf
+The architecture is designed to be deployed with Amazon Web Services. It uses two singleton autoscaling groups (i.e. they have both a minimum and maximum size of one server). One ASG manages the Feed Aggregator, and the other manages the FTP server that serves the aggregated file. For a detailed network diagram, refer to DataAggregationReferenceArchitecture.pdf. For a detailed description of the workflow, refer to DataAggregationReferenceArchitectureDetailedDescription.pdf
 
 In this demo, data feeds are represented by the three XML files stored in the "testdata" directory. The data feed endpoints are defined in the file "api_configs.json". If your ATS requires authentication or is a RESTful API, it will be your responsibility to modify the aggregation code as well as the configuration file format to accomodate the needs of your system. These should be the ONLY modifications required to turn this demo in to a production system!
 
 Once deployed, the aggregation server will pull the data every hour on the hour from the sample XML files on GitHub and combine them to a single XML file. Additionally, every 5 minutes a health check will execute on both the data feeds as well as the FTP server to ensure availability. If a health check fails, an email can be sent to a notification list, which is configured per data feed.
 
-A CloudFormation template, "FeedAggregationReferenceArchitecture.yaml", is included that makes it straightforward to deploy the demo. Follow these steps to deploy it:
+A CloudFormation template, "DataAggregationReferenceArchitecture.yaml", is included that makes it straightforward to deploy the demo. Follow these steps to deploy it:
 
-1. Download the contents of the "assets" directory (https://github.com/indeedalliances/FeedAggregationReferenceArchitecture/tree/master/assets) to your local drive.
+1. Download the contents of the "assets" directory (https://github.com/indeedalliances/DataAggregationReferenceArchitecture/tree/master/assets) to your local drive.
 2. Create an AWS account.
 3. Optional: In order to receive the health check failure emails, you will need register the both the "from" and "to" emails with AWS. The Simple Email Serivce is region-dependent, and currently the region is hard-coded in the HealthCheck code to use the us-east-1 region. To register your email address, go to the AWS console here: https://console.aws.amazon.com/ses/home?region=us-east-1# Click on "Email Addresses" in the left-hand column, then click the "Verify a New Email Address". It is possible to use the same email for the "from" an "to" addresses. Note that if you use a corporate email address for the "from" address, your emails will likely go to the spam folder, because the sender domain differs from actual domain from which the email is sent. You will need to edit the "api_configs.json" to include the "from" and "to" emails. Note that you can include a comma-separated list of emails in the "to" address.
 4. In any region, create an S3 bucket.
 5. Upload all the files from your local "assets" directory to the S3 bucket.
 6. Create a KeyPair that will be used to SSH in to the EC2 instances. It must be created within the region in which you intend to deploy the demo. Note: you must deploy to a region that support AWS Elastic File System. As of this writing, EFS is not supported in London, Paris, Singapore, Mumbai, Montreal, or São Paulo. For an up-to-date list of services supported by region, see: https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
 
-You are now ready to upload the CloudFormation template to AWS, which will deploy the computing resources for the demo. Go to the CloudFormation console, and upload "FeedAggregationReferenceArchitecture.yaml". You will be required to answer some questions in order to complete the deployment.
+You are now ready to upload the CloudFormation template to AWS, which will deploy the computing resources for the demo. Go to the CloudFormation console, and upload "DataAggregationReferenceArchitecture.yaml". You will be required to answer some questions in order to complete the deployment.
 
 Network Configuration questions:
 
